@@ -48,6 +48,7 @@ The CI pipeline will be triggered on every Pull Request and push to the `main` b
 ### 1.1 Web/Frontend Validation
 
 - **Linting:** Run `pnpm lint` (ESLint + Prettier).
+- **Security Audit (SEC-07):** Run `pnpm audit` to check for known vulnerabilities in npm packages.
 - **Type Checking:** Run `pnpm type-check` (tsc).
 - **Testing:** Run frontend unit/component tests (Vitest).
 
@@ -55,6 +56,7 @@ The CI pipeline will be triggered on every Pull Request and push to the `main` b
 
 - **Formatting:** Run `cargo fmt --check`.
 - **Linting:** Run `cargo clippy -- -D warnings`.
+- **Security Audit (SEC-07):** Run `cargo audit` to check for known vulnerabilities in crates.
 - **Testing:** Run `cargo test` (unit and integration tests).
 
 ### 1.3 Cross-Platform Build Check

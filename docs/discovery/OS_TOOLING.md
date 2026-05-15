@@ -31,6 +31,10 @@ This document outlines the low-level capabilities, limitations, and requirements
 - **Limitations:**
   - **Complexity:** Requires low-level programming (C `ioctl` calls or libraries like `libevdev`).
   - **No High-Level Logic:** You must manually handle key-up/key-down sequences and timing.
+- **Security Warning (SEC-02):** Granting broad access to `/dev/uinput` (e.g., via the `input` group) allows any process to act as a hardware-level keylogger.
+- **Mitigation:**
+  1. Use a dedicated `udev` rule to restrict access to a specific `clickease` user/group.
+  2. Prioritize `libei` on modern Wayland compositors for better permission scoping.
 - **Requirements:**
   - **Administrative Privileges:** Access to `/dev/uinput` is typically restricted to root.
   - **Configuration:** Requires `CONFIG_INPUT_UINPUT` to be enabled in the kernel (standard on most distros).

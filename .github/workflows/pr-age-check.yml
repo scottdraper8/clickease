@@ -20,18 +20,19 @@ jobs:
       - name: Verify PR Age
         shell: bash
         run: |
-          CREATED_AT="${{ github.event.pull_request.created_at }}"
-          CREATED_TIME=$(date -d "$CREATED_AT" +%s)
+          # Use updated_at to ensure cooldown resets after every push/change
+          UPDATED_AT="${{ github.event.pull_request.updated_at }}"
+          UPDATED_TIME=$(date -d "$UPDATED_AT" +%s)
           CURRENT_TIME=$(date +%s)
-          DIFF=$((CURRENT_TIME - CREATED_TIME))
+          DIFF=$((CURRENT_TIME - UPDATED_TIME))
           REQUIRED_SECONDS=86400 # 24 hours
 
           if [ "$DIFF" -lt "$REQUIRED_SECONDS" ]; then
             HOURS_LEFT=$(( (REQUIRED_SECONDS - DIFF) / 3600 ))
             MINUTES_LEFT=$(( ((REQUIRED_SECONDS - DIFF) % 3600) / 60 ))
-            echo "::error::This PR is too new to merge ($((DIFF / 3600))h old). Minimum age is 24h."
+            echo "::error::This PR was modified too recently ($((DIFF / 3600))h ago). Minimum wait is 24h after the last change."
             echo "Please wait another $HOURS_LEFT hours and $MINUTES_LEFT minutes."
             exit 1
           else
-            echo "PR age requirement met (PR is $((DIFF / 3600))h old)."
+            echo "PR age requirement met (Last change was $((DIFF / 3600))h ago)."
           fi
