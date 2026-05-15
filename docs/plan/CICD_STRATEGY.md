@@ -4,6 +4,21 @@ This document outlines the Continuous Integration and Continuous Deployment stra
 
 ## 1. Security Mandate: Step Security Harden-Runner
 
+...
+
+## 2. Fork Security (Anti-Worm/Shai Hulud)
+
+To prevent "worm" style attacks where malicious forks trigger actions to exfiltrate secrets or poison the cache (e.g., the Shai Hulud incident):
+
+- **Read-Only Defaults:** All workflows MUST explicitly set `permissions: read-all` at the top level. Permissions should only be escalated on a per-job basis where strictly necessary.
+- **`pull_request_target` Prohibition:** Never use `pull_request_target` for tasks that check out untrusted code or run build scripts (e.g., `pnpm install`, `cargo build`). This event runs with write-access and access to secrets; use `pull_request` instead for all CI tasks.
+- **Approval Policy:** The repository MUST be configured to require manual approval for all outside contributors before any GitHub Actions workflows are triggered.
+- **Cache Isolation:** CI caches should be keyed with `github.event.pull_request.head.sha` to prevent cross-PR cache poisoning.
+
+## 3. Dependency Management & Cooldown
+
+...
+
 To ensure the integrity of our build pipeline and prevent supply chain attacks, **all GitHub Action workflows MUST include Step Security's `harden-runner` as the first step in every job.**
 
 ### Why Harden-Runner?
