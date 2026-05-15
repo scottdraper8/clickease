@@ -1,0 +1,9 @@
+# This file is used by direnv to automatically set up the development environment.
+# It ensures that all commands (including pre-commit hooks) are run inside the
+# clickease-dev Distrobox container which has the necessary system headers.
+
+if [ -z "$DISTROBOX_ENTER_PATH" ]; then
+  echo "📦 Entering Clickease Development Distrobox..."
+  # Use --target . to keep the current working directory
+  exec distrobox enter clickease-dev -- .
+fi

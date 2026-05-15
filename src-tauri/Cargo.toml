@@ -1,0 +1,19 @@
+[package]
+name = "clickease"
+version = "0.1.0"
+description = "Clickease - Cross-platform input simulation"
+authors = ["you"]
+edition = "2021"
+
+[lib]
+name = "clickease_lib"
+crate-type = ["staticlib", "cdylib", "rlib"]
+
+[build-dependencies]
+tauri-build = "2.6.1"
+
+[dependencies]
+tauri = { version = "2.11.1", features = [] }
+tauri-plugin-opener = "2.5.4"
+serde = { version = "1.0.219", features = ["derive"] }
+serde_json = "1.0.141"
