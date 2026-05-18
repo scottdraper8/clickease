@@ -1,27 +1,32 @@
-
-Cargo.lock
-.directory
-dist/
-dist-tauri/
-.DS_Store
-.envrc
-.idea/
-# IDEs
-*.njsproj
 # Node.js
 node_modules/
-*.ntvs*
-# OS
+dist/
+dist-tauri/
 pnpm-debug.log*
-# Project specific
+
 # Rust
-scripts/emergency_bypass.sh
-*.sln
-src-tauri/binaries/
-src-tauri/target/
-*.suo
-*.sw?
 target/
+Cargo.lock
+
 # Tauri
-Thumbs.db
+src-tauri/target/
+src-tauri/binaries/
+
+# IDEs
 .vscode/
+.idea/
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+
+# OS
+.directory
+.DS_Store
+Thumbs.db
+
+# Project specific
+scripts/emergency_bypass.sh
+.envrc
+dev

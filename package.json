@@ -1,7 +1,7 @@
 {
   "name": "clickease",
   "private": true,
-  "version": "0.1.0",
+  "version": "0.0.1",
   "type": "module",
   "scripts": {
     "dev": "vite",
@@ -11,13 +11,17 @@
   },
   "dependencies": {
     "@tauri-apps/api": "2.11.0",
-    "@tauri-apps/plugin-opener": "2.5.4"
+    "@tauri-apps/plugin-global-shortcut": "^2.3.1",
+    "@tauri-apps/plugin-notification": "^2.3.3",
+    "@tauri-apps/plugin-opener": "2.5.4",
+    "@tauri-apps/plugin-os": "^2.3.2"
   },
   "devDependencies": {
     "@eslint/css": "^1.2.0",
     "@eslint/js": "^10.0.1",
     "@eslint/json": "^1.2.0",
     "@eslint/markdown": "^8.0.1",
+    "@tailwindcss/vite": "4.3.0",
     "@tauri-apps/cli": "2.11.1",
     "@typescript-eslint/eslint-plugin": "^8.59.3",
     "@typescript-eslint/parser": "^8.59.3",

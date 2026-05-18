@@ -1,57 +1,244 @@
 @import "tailwindcss";
 
-:root {
-  font-family: Inter, Avenir, Helvetica, Arial, sans-serif;
-  font-size: 16px;
-  line-height: 24px;
-  font-weight: 400;
+@theme {
+  --color-dracula-bg: oklch(25.33% 0.024 286.37);
+  --color-dracula-bg-elevated: oklch(28% 0.024 286.37);
+  --color-dracula-fg: oklch(93.65% 0.016 284.07);
+  --color-dracula-primary: oklch(70.17% 0.16 322.16);
+  --color-dracula-accent: oklch(80% 0.12 150);
 
-  color: #0f0f0f;
-  background-color: #f6f6f6;
+  --color-catppuccin-bg: oklch(96.34% 0.011 254.76);
+  --color-catppuccin-bg-elevated: oklch(98% 0.011 254.76);
+  --color-catppuccin-fg: oklch(34.15% 0.033 255.88);
+  --color-catppuccin-primary: oklch(62.88% 0.14 300.9);
+  --color-catppuccin-accent: oklch(75% 0.12 150);
 
-  font-synthesis: none;
-  text-rendering: optimizeLegibility;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  -webkit-text-size-adjust: 100%;
+  /* Tight, subtle Neumorphic shadows */
+  --shadow-neumorphic: 2px 2px 6px var(--shadow-dark),
+    -2px -2px 6px var(--shadow-light);
+  --shadow-neumorphic-inset: inset 1.5px 1.5px 3px var(--shadow-dark),
+    inset -1.5px -1.5px 3px var(--shadow-light);
 }
 
-.container {
+:root {
+  font-family:
+    "Inter",
+    system-ui,
+    -apple-system,
+    sans-serif;
+
+  /* Default: Catppuccin Latte (Light) - Slightly more neutral/grey */
+  --bg: oklch(94% 0.01 254.76);
+  --bg-elevated: oklch(96% 0.01 254.76);
+  --fg: var(--color-catppuccin-fg);
+  --primary: var(--color-catppuccin-primary);
+  --accent: var(--color-catppuccin-accent);
+  /* Slightly more pronounced shadows in light mode */
+  --shadow-dark: oklch(82% 0.02 254.76);
+  --shadow-light: oklch(100% 0 0);
+
+  color: var(--fg);
+  background-color: var(--bg);
+  transition:
+    background-color 0.3s ease,
+    color 0.3s ease;
+}
+
+:root.dark {
+  /* Dracula (Dark) */
+  --bg: var(--color-dracula-bg);
+  --bg-elevated: var(--color-dracula-bg-elevated);
+  --fg: var(--color-dracula-fg);
+  --primary: var(--color-dracula-primary);
+  --accent: var(--color-dracula-accent);
+  --shadow-dark: oklch(18% 0.02 286.37);
+  --shadow-light: oklch(32% 0.02 286.37);
+}
+
+body {
   margin: 0;
-  padding-top: 10vh;
+  display: flex;
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+#app {
+  width: 100%;
   display: flex;
   flex-direction: column;
-  justify-content: center;
-  text-align: center;
 }
 
-.row {
+.logo-gradient {
+  background: linear-gradient(
+    to right,
+    oklch(75% 0.2 340),
+    oklch(65% 0.25 300),
+    oklch(55% 0.2 280)
+  );
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  padding-right: 0.1em;
+  margin-right: -0.1em;
+}
+
+/* Neumorphic Components */
+#schedule-list {
+  padding: 1rem;
+  margin: -1rem;
+}
+
+.neu-card {
+  background: var(--bg-elevated);
+  border-radius: 16px;
+  box-shadow: var(--shadow-neumorphic);
+  padding: 1.5rem;
+  margin: 0.5rem;
+}
+
+.neu-button {
+  background: var(--bg-elevated);
+  border-radius: 8px;
+  box-shadow: var(--shadow-neumorphic);
+  padding: 0.5rem 1rem;
+  border: none;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-weight: 500;
+  color: var(--fg);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.neu-button:hover {
+  transform: translateY(-1px);
+}
+
+.neu-button:active,
+.neu-button.active {
+  box-shadow: var(--shadow-neumorphic-inset);
+  transform: translateY(0);
+}
+
+.neu-button-primary {
+  color: var(--primary);
+  font-weight: 600;
+}
+
+.neu-button-accent {
+  color: var(--accent);
+}
+
+.neu-input-wrapper {
+  position: relative;
   display: flex;
-  justify-content: center;
+  align-items: center;
 }
 
-.logo {
-  height: 6em;
-  padding: 1.5em;
-  will-change: filter;
-  transition: 0.75s;
+.neu-input {
+  background: var(--bg);
+  border-radius: 8px;
+  box-shadow: var(--shadow-neumorphic-inset);
+  padding: 0.5rem 1rem;
+  border: none;
+  outline: none;
+  color: var(--fg);
+  width: 100%;
+  /* Hide default arrows */
+  -moz-appearance: textfield;
 }
 
-.logo.vite:hover {
-  filter: drop-shadow(0 0 2em #747bff);
+.neu-input::-webkit-outer-spin-button,
+.neu-input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
 }
 
-.logo.typescript:hover {
-  filter: drop-shadow(0 0 2em #2d79c7);
+.neu-stepper {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  margin-left: -32px;
+  padding-right: 8px;
 }
 
-.logo.tauri:hover {
-  filter: drop-shadow(0 0 2em #24c8db);
+.neu-step-btn {
+  background: transparent;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  color: var(--fg);
+  opacity: 0.5;
+  font-size: 10px;
+  line-height: 1;
+  transition: opacity 0.2s;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    color: #f6f6f6;
-    background-color: #2f2f2f;
+.neu-step-btn:hover {
+  opacity: 1;
+}
+
+/* Transitions for dynamic panels */
+#hold-settings {
+  display: none;
+  opacity: 0;
+  transform: translateY(-10px);
+}
+
+#hold-settings.show {
+  display: block;
+  animation: slideInDown 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+@keyframes slideInDown {
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Keyboard Styling */
+.keyboard-grid {
+  display: grid;
+  grid-template-columns: repeat(30, 1fr);
+  gap: 6px;
+  padding: 1rem;
+}
+
+.key {
+  grid-column: span 2;
+  height: 45px;
+  font-size: 0.8rem;
+  border-radius: 6px;
+  text-transform: uppercase;
+  background: var(--bg-elevated);
+}
+
+.key-wide-3 {
+  grid-column: span 3;
+}
+.key-wide-4 {
+  grid-column: span 4;
+}
+.key-wide-5 {
+  grid-column: span 5;
+}
+.key-space {
+  grid-column: span 12;
+}
+
+.animate-in {
+  animation: slideInUp 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+@keyframes slideInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
   }
 }

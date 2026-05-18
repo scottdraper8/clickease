@@ -1,6 +1,6 @@
 [package]
 name = "clickease"
-version = "0.1.0"
+version = "0.0.1"
 description = "Clickease - Cross-platform input simulation"
 authors = ["you"]
 edition = "2021"
@@ -10,10 +10,31 @@ name = "clickease_lib"
 crate-type = ["staticlib", "cdylib", "rlib"]
 
 [build-dependencies]
-tauri-build = "2.6.1"
+tauri-build = { version = "2.6.1", features = [] }
 
 [dependencies]
-tauri = { version = "2.11.1", features = [] }
+tauri = { version = "2.11.1", features = ["tray-icon"] }
 tauri-plugin-opener = "2.5.4"
 serde = { version = "1.0.219", features = ["derive"] }
 serde_json = "1.0.141"
+thiserror = "2.0.11"
+uuid = { version = "1.13.1", features = ["v4", "serde"] }
+dashmap = "6.1.0"
+tokio = { version = "1.43.0", features = ["full"] }
+tauri-plugin-notification = "2.3.3"
+tauri-plugin-shell = "2.3.5"
+tauri-plugin-os = "2.3.2"
+libc = "0.2.169"
+tauri-plugin-global-shortcut = "2.3.1"
+
+[target.'cfg(target_os = "linux")'.dependencies]
+mouse-keyboard-input = "0.9.1"
+
+[target.'cfg(target_os = "windows")'.dependencies]
+windows = { version = "0.59.0", features = ["Win32_UI_Input_KeyboardAndMouse", "Win32_Foundation", "Win32_Security", "Win32_System_Threading"] }
+
+[target.'cfg(target_os = "macos")'.dependencies]
+core-graphics = "0.24.0"
+accessibility = "0.2.0"
+accessibility-sys = "0.2.0"
+core-foundation = "0.10.1"

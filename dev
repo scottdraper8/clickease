@@ -1,0 +1,12 @@
+#!/bin/bash
+# Clickease Optimized Dev Entry
+# This script enters the container and immediately sets up the environment.
+
+if [ -f "/run/.containerenv" ] || [ -f "/.dockerenv" ]; then
+  echo "[Info] Already inside a container."
+  exit 0
+fi
+
+echo "[Info] Entering Clickease Development Distrobox..."
+# Use --login to ensure the box's shell profile is sourced correctly
+distrobox enter clickease-dev -- bash --login

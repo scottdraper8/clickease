@@ -1,7 +1,98 @@
-# Tauri + Vanilla TS
+<div align="center">
 
-This template should help get you started developing with Tauri in vanilla HTML, CSS and Typescript.
+<kbd><img width="100%" src="assets/banner.png" alt="Clickease Banner"></kbd>
 
-## Recommended IDE Setup
+[![Clickease Version](https://img.shields.io/badge/Clickease-0.0.2-ff79c6?logo=github&logoColor=white&labelColor=6272a4)](https://github.com/scottdraper8/clickease/releases)
+[![Rust 1.80+](https://img.shields.io/badge/Rust-1.80+-ffb86c?logo=rust&logoColor=white&labelColor=6272a4)](https://www.rust-lang.org/)
+[![pnpm](https://img.shields.io/badge/pnpm-10.0+-f1fa8c?logo=pnpm&logoColor=282a36&labelColor=6272a4)](https://pnpm.io/)
+[![pre-commit](https://img.shields.io/badge/pre--commit-Enabled-50fa7b?logo=pre-commit&logoColor=282a36&labelColor=6272a4)](https://github.com/pre-commit/pre-commit)
+[![License: AGPL-3.0](https://img.shields.io/badge/License-AGPL--3.0-8be9fd?logo=opensourceinitiative&logoColor=white&labelColor=6272a4)](LICENSE)
 
-- [VS Code](https://code.visualstudio.com/) + [Tauri](https://marketplace.visualstudio.com/items?itemName=tauri-apps.tauri-vscode) + [rust-analyzer](https://marketplace.visualstudio.com/items?itemName=rust-lang.rust-analyzer)
+<hr>
+
+Clickease is a lightweight, high-performance cross-platform desktop application designed to automate keyboard and mouse inputs. Built with **Tauri v2** and **Rust**, it provides a minimal footprint and near-native execution speed while maintaining a modern, tactile interface.
+
+<hr>
+
+</div>
+
+## Overview
+
+Clickease abstracts complex operating system security models into a unified automation dashboard. It utilizes native system APIs to ensure high-fidelity input simulation that bypasses standard application-level restrictions.
+
+```mermaid
+graph LR
+    subgraph Frontend [User Interface]
+        UI[Vanilla TS Dashboard]
+        Theme[Theming Engine]
+    end
+
+    subgraph Backend [Rust Core]
+        IPC[Tauri IPC Layer]
+        Sched[Async Scheduler]
+        State[Managed App State]
+    end
+
+    subgraph Platform [OS Implementation]
+        Win[SendInput API]
+        Mac[Quartz Events]
+        Lin[uinput Kernel]
+    end
+
+    UI --> IPC
+    IPC --> Sched
+    Sched --> State
+    State --> Win
+    State --> Mac
+    State --> Lin
+
+    %% Dracula Theme Styling
+    style Frontend fill:#282a36,stroke:#6272a4,color:#f8f8f2
+    style Backend fill:#44475a,stroke:#bd93f9,color:#f8f8f2
+    style Platform fill:#282a36,stroke:#ff79c6,color:#f8f8f2
+    style UI fill:#6272a4,color:#f8f8f2
+    style Theme fill:#6272a4,color:#f8f8f2
+    style IPC fill:#bd93f9,color:#282a36
+    style Sched fill:#bd93f9,color:#282a36
+    style State fill:#bd93f9,color:#282a36
+    style Win fill:#ff79c6,color:#282a36
+    style Mac fill:#ff79c6,color:#282a36
+    style Lin fill:#ff79c6,color:#282a36
+```
+
+<!-- Prettier keeps messing with this admonition -->
+
+> [!IMPORTANT]
+>
+> **Privileged Access Required**: To ensure reliable input injection across all windows (including elevated ones), Clickease requires **Administrator** privileges on Windows and **Accessibility** permissions on macOS.
+
+## Key Features
+
+- **Native Performance**: Leverages Rust for precise timing and direct OS API interaction.
+- **Neumorphic Design**: A tactile UI with Dracula (Dark) and Catppuccin (Light) themes.
+- **Interactive Keyboard**: Visual key mapping with support for multi-key combinations and Shift modes.
+- **Hardened Security**: Built with a security-first CI/CD pipeline and automated dependency auditing.
+- **Global Panic Button**: Instantly stop all active automation with `Ctrl+Shift+X`.
+
+## Development
+
+This project is built using **Tauri v2**. To begin development, ensure you have the Rust toolchain and Node.js environment configured.
+
+> [!TIP]
+>
+> For developers on immutable Linux distributions (Bazzite, Fedora Silverblue), it is recommended to use a **Distrobox** container with the necessary system headers (`webkit2gtk`, `dbus-devel`) installed.
+
+1. **Install Dependencies**:
+   ```bash
+   pnpm install
+   ```
+2. **Launch in Dev Mode**:
+   ```bash
+   pnpm tauri dev
+   ```
+
+---
+
+<div align="center">
+    <em>Built with care for the open source community</em> :purple_heart:
+</div>

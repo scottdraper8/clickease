@@ -2,38 +2,330 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <link rel="stylesheet" href="./styles/global.css" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Clickease</title>
-    <script type="module" src="./main.ts" defer></script>
   </head>
-
   <body>
-    <main class="container">
-      <h1>Welcome to Clickease</h1>
+    <div
+      id="permission-banner"
+      class="hidden bg-amber-500/10 border-b border-amber-500/20 px-8 py-3 text-sm flex justify-between items-center"
+    >
+      <span class="text-amber-600 dark:text-amber-400 font-medium">
+        [Alert] Accessibility permissions are required to simulate inputs on
+        macOS.
+      </span>
+      <button id="request-permission-btn" class="neu-button text-xs py-1 px-3">
+        Fix Now
+      </button>
+    </div>
 
-      <div class="row">
-        <a href="https://vite.dev" target="_blank">
-          <img src="./assets/vite.svg" class="logo vite" alt="Vite logo" />
-        </a>
-        <a href="https://tauri.app" target="_blank">
-          <img src="./assets/tauri.svg" class="logo tauri" alt="Tauri logo" />
-        </a>
-        <a href="https://www.typescriptlang.org/docs" target="_blank">
-          <img
-            src="./assets/typescript.svg"
-            class="logo typescript"
-            alt="typescript logo"
-          />
-        </a>
-      </div>
-      <p>Click on the Tauri logo to learn more about the framework</p>
+    <div id="app" class="p-6">
+      <header class="flex justify-between items-center mb-8">
+        <div class="flex items-baseline gap-4">
+          <h1
+            class="text-4xl font-black tracking-tight uppercase italic logo-gradient"
+          >
+            Clickease
+          </h1>
+          <p class="text-sm opacity-50 font-medium uppercase tracking-widest">
+            Automation Dashboard
+          </p>
+        </div>
+        <div class="flex gap-4">
+          <button
+            id="stop-all-btn"
+            class="neu-button text-red-500 hidden"
+            title="Stop All Schedules"
+          >
+            Stop All
+          </button>
+          <button id="theme-toggle" class="neu-button" title="Toggle Theme">
+            <span class="uppercase tracking-widest text-xs font-bold"
+              >Dark Mode</span
+            >
+          </button>
+        </div>
+      </header>
 
-      <form class="row" id="greet-form">
-        <input id="greet-input" placeholder="Enter a name..." />
-        <button type="submit">Greet</button>
-      </form>
-      <p id="greet-msg"></p>
-    </main>
+      <main class="grid grid-cols-1 gap-8">
+        <!-- Keyboard Selection Section -->
+        <section class="neu-card">
+          <div class="flex justify-between items-center mb-6 px-4">
+            <h2 class="text-lg font-bold uppercase tracking-wide opacity-80">
+              Select Keys
+            </h2>
+            <div
+              id="selected-keys-display"
+              class="neu-input px-4 py-2 text-center max-w-md font-mono text-[var(--primary)] tracking-widest"
+            >
+              No keys selected
+            </div>
+            <button
+              id="special-keys-toggle"
+              class="neu-button"
+              title="Show Special Keys"
+            >
+              *
+            </button>
+          </div>
+
+          <div id="keyboard" class="keyboard-grid">
+            <!-- Row 1 -->
+            <button class="neu-button key" data-key="`">`</button>
+            <button class="neu-button key" data-key="1">1</button>
+            <button class="neu-button key" data-key="2">2</button>
+            <button class="neu-button key" data-key="3">3</button>
+            <button class="neu-button key" data-key="4">4</button>
+            <button class="neu-button key" data-key="5">5</button>
+            <button class="neu-button key" data-key="6">6</button>
+            <button class="neu-button key" data-key="7">7</button>
+            <button class="neu-button key" data-key="8">8</button>
+            <button class="neu-button key" data-key="9">9</button>
+            <button class="neu-button key" data-key="0">0</button>
+            <button class="neu-button key" data-key="-">-</button>
+            <button class="neu-button key" data-key="=">=</button>
+            <button class="neu-button key key-wide-4" data-key="Backspace">
+              Back
+            </button>
+
+            <!-- Row 2 -->
+            <button class="neu-button key key-wide-3" data-key="Tab">
+              Tab
+            </button>
+            <button class="neu-button key" data-key="q">Q</button>
+            <button class="neu-button key" data-key="w">W</button>
+            <button class="neu-button key" data-key="e">E</button>
+            <button class="neu-button key" data-key="r">R</button>
+            <button class="neu-button key" data-key="t">T</button>
+            <button class="neu-button key" data-key="y">Y</button>
+            <button class="neu-button key" data-key="u">U</button>
+            <button class="neu-button key" data-key="i">I</button>
+            <button class="neu-button key" data-key="o">O</button>
+            <button class="neu-button key" data-key="p">P</button>
+            <button class="neu-button key" data-key="[">[</button>
+            <button class="neu-button key" data-key="]">]</button>
+            <button class="neu-button key" data-key="\">\</button>
+
+            <!-- Row 3 -->
+            <button class="neu-button key key-wide-4" data-key="Caps">
+              Caps
+            </button>
+            <button class="neu-button key" data-key="a">A</button>
+            <button class="neu-button key" data-key="s">S</button>
+            <button class="neu-button key" data-key="d">D</button>
+            <button class="neu-button key" data-key="f">F</button>
+            <button class="neu-button key" data-key="g">G</button>
+            <button class="neu-button key" data-key="h">H</button>
+            <button class="neu-button key" data-key="j">J</button>
+            <button class="neu-button key" data-key="k">K</button>
+            <button class="neu-button key" data-key="l">L</button>
+            <button class="neu-button key" data-key=";">;</button>
+            <button class="neu-button key" data-key="'">'</button>
+            <button class="neu-button key key-wide-4" data-key="Enter">
+              Enter
+            </button>
+
+            <!-- Row 4 -->
+            <button class="neu-button key key-wide-5" data-key="Shift">
+              Shift
+            </button>
+            <button class="neu-button key" data-key="z">Z</button>
+            <button class="neu-button key" data-key="x">X</button>
+            <button class="neu-button key" data-key="c">C</button>
+            <button class="neu-button key" data-key="v">V</button>
+            <button class="neu-button key" data-key="b">B</button>
+            <button class="neu-button key" data-key="n">N</button>
+            <button class="neu-button key" data-key="m">M</button>
+            <button class="neu-button key" data-key=",">,</button>
+            <button class="neu-button key" data-key=".">.</button>
+            <button class="neu-button key" data-key="/">/</button>
+            <button class="neu-button key key-wide-5" data-key="Shift">
+              Shift
+            </button>
+
+            <!-- Row 5 -->
+            <button class="neu-button key key-wide-3" data-key="Control">
+              Ctrl
+            </button>
+            <button class="neu-button key key-wide-3" data-key="Alt">
+              Alt
+            </button>
+            <button class="neu-button key key-wide-3" data-key="Meta">
+              Meta
+            </button>
+            <button class="neu-button key key-space" data-key="Space">
+              Space
+            </button>
+            <button class="neu-button key key-wide-3" data-key="Meta">
+              Meta
+            </button>
+            <button class="neu-button key key-wide-3" data-key="Alt">
+              Alt
+            </button>
+            <button class="neu-button key key-wide-3" data-key="Control">
+              Ctrl
+            </button>
+          </div>
+        </section>
+
+        <!-- Configuration Controls -->
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+          <!-- Column 1: Timing -->
+          <section id="timing-panel" class="neu-card flex flex-col gap-6">
+            <h2 class="text-lg font-bold uppercase tracking-wide opacity-80">
+              Timing
+            </h2>
+
+            <div class="flex flex-col gap-2">
+              <label class="text-xs uppercase font-bold opacity-60"
+                >Interval (sec)</label
+              >
+              <div class="neu-input-wrapper">
+                <input
+                  type="number"
+                  id="interval"
+                  value="1.0"
+                  step="0.1"
+                  class="neu-input"
+                />
+                <div class="neu-stepper">
+                  <button
+                    class="neu-step-btn"
+                    data-input="interval"
+                    data-step="0.1"
+                  >
+                    ▲
+                  </button>
+                  <button
+                    class="neu-step-btn"
+                    data-input="interval"
+                    data-step="-0.1"
+                  >
+                    ▼
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            <div class="flex flex-col gap-2">
+              <label class="text-xs uppercase font-bold opacity-60"
+                >Window (min)</label
+              >
+              <div class="neu-input-wrapper">
+                <input
+                  type="number"
+                  id="duration"
+                  value="60"
+                  step="1"
+                  class="neu-input"
+                />
+                <div class="neu-stepper">
+                  <button
+                    class="neu-step-btn"
+                    data-input="duration"
+                    data-step="1"
+                  >
+                    ▲
+                  </button>
+                  <button
+                    class="neu-step-btn"
+                    data-input="duration"
+                    data-step="-1"
+                  >
+                    ▼
+                  </button>
+                </div>
+              </div>
+            </div>
+          </section>
+
+          <!-- Column 2: Interaction Mode -->
+          <section id="behavior-panel" class="neu-card flex flex-col gap-6">
+            <h2 class="text-lg font-bold uppercase tracking-wide opacity-80">
+              Behavior
+            </h2>
+
+            <div class="flex items-center gap-4">
+              <button
+                id="mode-press"
+                class="neu-button active flex-1 py-4 uppercase font-black tracking-widest text-sm"
+              >
+                Press
+              </button>
+              <button
+                id="mode-hold"
+                class="neu-button flex-1 py-4 uppercase font-black tracking-widest text-sm"
+              >
+                Hold
+              </button>
+            </div>
+
+            <div id="hold-settings">
+              <div class="flex flex-col gap-2">
+                <label class="text-xs uppercase font-bold opacity-60"
+                  >Hold Duration (sec)</label
+                >
+                <div class="neu-input-wrapper">
+                  <input
+                    type="number"
+                    id="hold-duration"
+                    value="5"
+                    step="1"
+                    class="neu-input"
+                  />
+                  <div class="neu-stepper">
+                    <button
+                      class="neu-step-btn"
+                      data-input="hold-duration"
+                      data-step="1"
+                    >
+                      ▲
+                    </button>
+                    <button
+                      class="neu-step-btn"
+                      data-input="hold-duration"
+                      data-step="-1"
+                    >
+                      ▼
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="flex flex-col gap-4 mt-auto">
+              <button
+                id="start-btn"
+                class="neu-button neu-button-primary py-4 uppercase font-black tracking-[0.2em]"
+              >
+                Start Automation
+              </button>
+            </div>
+          </section>
+
+          <!-- Column 3: Active Jobs -->
+          <section
+            id="jobs-panel"
+            class="neu-card flex flex-col overflow-visible"
+          >
+            <h2
+              class="text-lg font-bold uppercase tracking-wide opacity-80 mb-6"
+            >
+              Active Jobs
+            </h2>
+            <div
+              id="schedule-list"
+              class="space-y-6 overflow-y-auto max-h-[400px] p-4 -m-4"
+            >
+              <div class="opacity-40 italic text-center text-sm py-12">
+                No active jobs
+              </div>
+            </div>
+          </section>
+        </div>
+      </main>
+    </div>
+
+    <script type="module" src="/main.ts"></script>
   </body>
 </html>
