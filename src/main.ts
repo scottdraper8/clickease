@@ -5,10 +5,8 @@ import { Schedule, Command, Key } from "./types/simulator";
 import { listen } from "@tauri-apps/api/event";
 import { type } from "@tauri-apps/plugin-os";
 
-// Initialize Theme
 ThemeManager.init();
 
-// UI Elements
 const themeToggle = document.getElementById("theme-toggle");
 const stopAllBtn = document.getElementById("stop-all-btn");
 const scheduleList = document.getElementById("schedule-list");
@@ -18,21 +16,18 @@ const selectedKeysDisplay = document.getElementById("selected-keys-display");
 const startBtn = document.getElementById("start-btn");
 const specialKeysToggle = document.getElementById("special-keys-toggle");
 
-// Interaction Modes
 const modePress = document.getElementById("mode-press");
 const modeHold = document.getElementById("mode-hold");
 const holdSettings = document.getElementById("hold-settings");
 
-// State
 let selectedKeys: string[] = [];
 let currentMode: "press" | "hold" = "press";
 let shiftMode = false;
 const activeSchedules: Map<
   string,
-  { schedule: Schedule; element: HTMLElement }
+  { schedule: Schedule; element: HTMLElement; isPaused: boolean }
 > = new Map();
 
-// Key mappings for shift mode
 const shiftMappings: Record<string, string> = {
   "1": "!",
   "2": "@",
@@ -56,7 +51,6 @@ const shiftMappings: Record<string, string> = {
   "/": "?",
 };
 
-// Theme Button Logic
 function updateThemeButtonText() {
   const isDark = document.documentElement.classList.contains("dark");
   if (themeToggle) {
@@ -66,7 +60,6 @@ function updateThemeButtonText() {
   }
 }
 
-// Global Error Handling for Debugging
 window.onerror = (msg, url, line, col, error) => {
   console.error("Window Error:", msg, "at", url, ":", line, ":", col, error);
   return false;
@@ -76,14 +69,11 @@ window.addEventListener("unhandledrejection", (event) => {
   console.error("Unhandled Promise Rejection:", event.reason);
 });
 
-// Initialize UI
 updateThemeButtonText();
 
-// Initialize Permissions
 async function checkPermissions() {
   try {
     const status = await ApiClient.getPermissions();
-    // Use a try-catch for type() to avoid hanging if the plugin fails
     let platform = "unknown";
     try {
       platform = await type();
@@ -108,23 +98,30 @@ async function checkPermissions() {
 }
 checkPermissions();
 
-// Theme Toggle
 themeToggle?.addEventListener("click", () => {
   ThemeManager.toggle();
   updateThemeButtonText();
 });
 
-// Special Keys Toggle (Star Icon Logic)
 specialKeysToggle?.addEventListener("click", () => {
   shiftMode = !shiftMode;
   specialKeysToggle.classList.toggle("active", shiftMode);
 
-  // Update state: map existing selected keys to their shifted/unshifted counterparts
+  // Trigger pulse animation only on affected keys
+  document.querySelectorAll(".key").forEach((k) => {
+    const btn = k as HTMLElement;
+    const key = btn.dataset.key;
+    if (key && shiftMappings[key]) {
+      k.classList.remove("key-highlight");
+      void (k as HTMLElement).offsetWidth; // Trigger reflow
+      k.classList.add("key-highlight");
+    }
+  });
+
   selectedKeys = selectedKeys.map((k) => {
     if (shiftMode) {
       return shiftMappings[k] || k;
     } else {
-      // Find unshifted counterpart
       const unshifted = Object.keys(shiftMappings).find(
         (key) => shiftMappings[key] === k,
       );
@@ -146,14 +143,12 @@ function updateKeyboardLabels() {
   });
 }
 
-// Virtual Keyboard Logic
 document.querySelectorAll(".key").forEach((el) => {
   const keyBtn = el as HTMLElement;
   keyBtn.addEventListener("click", () => {
     const keyValue = keyBtn.dataset.key;
     if (!keyValue) return;
 
-    // Use current display value if it's a shifted key
     const displayValue = keyBtn.textContent?.trim() || keyValue;
 
     if (selectedKeys.includes(displayValue)) {
@@ -176,7 +171,6 @@ function updateSelectedKeysDisplay() {
   }
 }
 
-// Custom Steppers Logic
 document.querySelectorAll(".neu-step-btn").forEach((el) => {
   const btn = el as HTMLElement;
   btn.addEventListener("click", () => {
@@ -190,7 +184,6 @@ document.querySelectorAll(".neu-step-btn").forEach((el) => {
   });
 });
 
-// Mode Switching
 modePress?.addEventListener("click", () => {
   currentMode = "press";
   modePress.classList.add("active");
@@ -205,7 +198,6 @@ modeHold?.addEventListener("click", () => {
   holdSettings?.classList.add("show");
 });
 
-// Start Automation
 startBtn?.addEventListener("click", async () => {
   if (selectedKeys.length === 0) {
     alert("Please select at least one key.");
@@ -229,7 +221,6 @@ startBtn?.addEventListener("click", async () => {
       sequence.push({ KeyPress: mapStringToKey(k) });
     });
   } else {
-    // Hold Mode
     selectedKeys.forEach((k) => {
       sequence.push({ KeyDown: mapStringToKey(k) });
     });
@@ -281,7 +272,6 @@ function mapStringToKey(s: string): Key {
   return s as Key;
 }
 
-// Backend Event Listeners
 listen("schedule-completed", (event) => {
   const id = event.payload as string;
   removeScheduleFromList(id);
@@ -291,7 +281,31 @@ listen("schedules-stopped", () => {
   activeSchedules.forEach((_, id) => removeScheduleFromList(id));
 });
 
-// UI Helpers
+listen("schedule-tick", (event) => {
+  const payload = event.payload as {
+    id: string;
+    remaining_secs: number;
+    is_paused: boolean;
+  };
+  const item = activeSchedules.get(payload.id);
+  if (item) {
+    item.isPaused = payload.is_paused;
+    const timeEl = item.element.querySelector(".time-remaining");
+    if (timeEl) {
+      const minutes = Math.floor(payload.remaining_secs / 60);
+      const seconds = payload.remaining_secs % 60;
+      timeEl.textContent = `${minutes}:${seconds.toString().padStart(2, "0")}`;
+    }
+
+    const pauseBtn = item.element.querySelector(".pause-btn");
+    if (pauseBtn) {
+      pauseBtn.textContent = item.isPaused ? "RESUME" : "PAUSE";
+      pauseBtn.classList.toggle("text-amber-500", !item.isPaused);
+      pauseBtn.classList.toggle("text-green-500", item.isPaused);
+    }
+  }
+});
+
 function updateStopAllVisibility() {
   if (activeSchedules.size > 0) {
     stopAllBtn?.classList.remove("hidden");
@@ -308,20 +322,44 @@ function addScheduleToList(schedule: Schedule) {
   }
 
   const card = document.createElement("div");
-  card.className = "neu-card flex justify-between items-center animate-in";
+  card.className = "neu-card flex flex-col gap-4 animate-in";
   card.innerHTML = `
-    <div class="flex flex-col gap-1">
-      <h3 class="font-bold text-sm text-[var(--primary)] uppercase tracking-wider">${
-        schedule.name
-      }</h3>
-      <p class="text-[10px] opacity-50 font-mono">INT: ${
-        schedule.interval.secs + schedule.interval.nanos / 1e9
-      }s | DUR: ${schedule.active_duration.secs / 60}m</p>
+    <div class="flex justify-between items-start">
+      <div class="flex flex-col gap-1">
+        <h3 class="font-bold text-sm text-[var(--primary)] uppercase tracking-wider">${
+          schedule.name
+        }</h3>
+        <p class="text-[10px] opacity-50 font-mono">INT: ${
+          schedule.interval.secs + schedule.interval.nanos / 1e9
+        }s | REM: <span class="time-remaining">--:--</span></p>
+      </div>
+      <div class="flex gap-2">
+        <button class="neu-button pause-btn py-2 px-3 text-[10px] font-bold text-amber-500">
+          PAUSE
+        </button>
+        <button class="neu-button stop-btn py-2 px-3 text-[10px] font-bold text-red-500">
+          STOP
+        </button>
+      </div>
     </div>
-    <button class="neu-button text-red-500 stop-btn py-2 px-4 text-xs font-bold">
-      STOP
-    </button>
   `;
+
+  card.querySelector(".pause-btn")?.addEventListener("click", async () => {
+    const item = activeSchedules.get(schedule.id!);
+    if (item && schedule.id) {
+      if (!item.isPaused) {
+        await ApiClient.pauseSchedule(schedule.id);
+        item.isPaused = true;
+      } else {
+        await ApiClient.resumeSchedule(schedule.id);
+        item.isPaused = false;
+      }
+      const pauseBtn = item.element.querySelector(".pause-btn")!;
+      pauseBtn.textContent = item.isPaused ? "RESUME" : "PAUSE";
+      pauseBtn.classList.toggle("text-amber-500", !item.isPaused);
+      pauseBtn.classList.toggle("text-green-500", item.isPaused);
+    }
+  });
 
   card.querySelector(".stop-btn")?.addEventListener("click", async () => {
     if (schedule.id) {
@@ -330,7 +368,7 @@ function addScheduleToList(schedule: Schedule) {
     }
   });
 
-  activeSchedules.set(schedule.id, { schedule, element: card });
+  activeSchedules.set(schedule.id, { schedule, element: card, isPaused: false });
   scheduleList.appendChild(card);
   updateStopAllVisibility();
 }

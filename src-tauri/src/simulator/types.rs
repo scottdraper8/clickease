@@ -59,7 +59,7 @@ pub trait InputSimulator {
     // Helper for a full click/tap
     fn key_click(&self, key: Key) -> Result<(), SimulatorError> {
         self.key_down(key.clone())?;
-        // Small delay might be needed for OS to register, but usually not for injection
+        // Small delay may be needed for OS registration; injection does not require it.
         self.key_up(key)
     }
 }

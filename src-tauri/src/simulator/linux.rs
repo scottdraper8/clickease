@@ -29,11 +29,7 @@ impl LinuxSimulator {
 
 impl InputSimulator for LinuxSimulator {
     fn key_down(&self, key: Key) -> Result<(), SimulatorError> {
-        // Try ydotool first
-        // ydotool key keycode:1 (1 for down, 0 for up)
-        // Note: ydotool key codes are often different or require translation
-
-        // For now, let's focus on the uinput fallback as it's more reliable if permissions are set
+        // Implementation uses uinput for event injection.
         self.ensure_uinput()?;
         let mut dev = self
             .uinput_device

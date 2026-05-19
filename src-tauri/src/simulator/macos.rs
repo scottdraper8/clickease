@@ -149,8 +149,8 @@ fn map_key(key: Key) -> Option<u16> {
     }
 }
 
-// We need to implement Send/Sync for MacosSimulator to use it in Managed State
-// The current implementation is safe because we create the source on-demand
-// and posting events to HID is thread-safe at the OS level.
+// Implement Send and Sync for MacosSimulator to enable use in Managed State.
+// Thread-safe because event sources are created on-demand and HID event
+// posting is thread-safe at the OS level.
 unsafe impl Send for MacosSimulator {}
 unsafe impl Sync for MacosSimulator {}

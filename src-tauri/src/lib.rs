@@ -31,6 +31,16 @@ async fn stop_schedule(id: Uuid, state: State<'_, AppState>) -> Result<bool, Str
 }
 
 #[tauri::command]
+async fn pause_schedule(id: Uuid, state: State<'_, AppState>) -> Result<bool, String> {
+    Ok(state.scheduler.pause_schedule(&id))
+}
+
+#[tauri::command]
+async fn resume_schedule(id: Uuid, state: State<'_, AppState>) -> Result<bool, String> {
+    Ok(state.scheduler.resume_schedule(&id))
+}
+
+#[tauri::command]
 async fn stop_all_schedules(state: State<'_, AppState>) -> Result<(), String> {
     state.scheduler.stop_all_schedules();
     Ok(())
@@ -47,7 +57,6 @@ async fn request_permissions() -> Result<(), String> {
     Ok(())
 }
 
-// Learn more about Tauri commands at https://tauri.app/develop/calling-rust/
 #[tauri::command]
 fn greet(name: &str) -> String {
     format!("Hello, {}! You've been greeted from Rust!", name)
@@ -70,12 +79,13 @@ pub fn run() {
             greet,
             start_schedule,
             stop_schedule,
+            pause_schedule,
+            resume_schedule,
             stop_all_schedules,
             get_permissions,
             request_permissions
         ])
         .setup(|app| {
-            // Safer adaptive maximization
             if let Some(window) = app.get_webview_window("main") {
                 if let Ok(Some(monitor)) = window.current_monitor() {
                     let size = monitor.size();
@@ -85,7 +95,6 @@ pub fn run() {
                 }
             }
 
-            // Register global shortcut to stop all
             let panic_shortcut = Shortcut::new(
                 Some(
                     tauri_plugin_global_shortcut::Modifiers::CONTROL

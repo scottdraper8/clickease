@@ -3,7 +3,6 @@ fn main() {
     {
         const REEXEC_KEY: &str = "CLICKEASE_REEXEC";
         if std::env::var(REEXEC_KEY).is_err() {
-            // Set all critical rendering fallbacks
             std::env::set_var("WEBKIT_DISABLE_COMPOSITING_MODE", "1");
             std::env::set_var("WEBKIT_DISABLE_DMABUF_RENDERER", "1");
             std::env::set_var("GDK_BACKEND", "x11");

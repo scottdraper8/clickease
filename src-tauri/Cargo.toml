@@ -1,6 +1,6 @@
 [package]
 name = "clickease"
-version = "0.0.1"
+version = "0.0.2"
 description = "Clickease - Cross-platform input simulation"
 authors = ["you"]
 edition = "2021"

@@ -20,6 +20,24 @@ export class ApiClient {
     }
   }
 
+  static async pauseSchedule(id: string): Promise<boolean> {
+    try {
+      return await invoke("pause_schedule", { id });
+    } catch (error) {
+      console.error("Failed to pause schedule:", error);
+      throw error;
+    }
+  }
+
+  static async resumeSchedule(id: string): Promise<boolean> {
+    try {
+      return await invoke("resume_schedule", { id });
+    } catch (error) {
+      console.error("Failed to resume schedule:", error);
+      throw error;
+    }
+  }
+
   static async stopAllSchedules(): Promise<void> {
     try {
       await invoke("stop_all_schedules");
