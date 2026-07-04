@@ -10,7 +10,7 @@
 
 <hr>
 
-Clickease is a lightweight, high-performance cross-platform desktop application designed to automate keyboard and mouse inputs. Built with **Tauri v2** and **Rust**, it provides a minimal footprint and near-native execution speed while maintaining a modern, tactile interface.
+Clickease is a cross-platform desktop application designed to automate keyboard and mouse inputs.
 
 <hr>
 
