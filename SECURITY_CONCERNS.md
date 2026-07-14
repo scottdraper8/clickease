@@ -14,29 +14,35 @@ implemented in the yaha repository.
 
 ## Severity Criteria
 
-| Level | Meaning |
-|-------|---------|
-| High | Exploitable without unusual preconditions, or failure directly compromises repository integrity, credentials, or build artifacts. |
-| Medium | Requires a specific precondition or the impact is limited by an external control. |
-| Low | Defense-in-depth improvement with no direct exploit path under current conditions. |
+| Level  | Meaning                                                                                                                           |
+| ------ | --------------------------------------------------------------------------------------------------------------------------------- |
+| High   | Exploitable without unusual preconditions, or failure directly compromises repository integrity, credentials, or build artifacts. |
+| Medium | Requires a specific precondition or the impact is limited by an external control.                                                 |
+| Low    | Defense-in-depth improvement with no direct exploit path under current conditions.                                                |
 
 ## Findings
 
-### CE-01: No CI Pipeline for Pull Requests
+### CE-01: CI Pipeline Exists but Is Not Required
 
-**Severity:** High
+**Severity:** Medium
+**Status:** Partially addressed in `v0.0.3`
 
-There is no workflow that runs on `pull_request`. The only required status
-check for merging is the 24-hour cooldown. Code can reach `main` without
-automated linting, testing, formatting checks, or security audits.
+There is now a `.github/workflows/ci.yml` workflow that runs on `pull_request`
+and `push` to `main`. It installs dependencies, builds the frontend, and runs
+Rust backend tests.
+
+The remaining gap is enforcement and coverage. Branch protection does not
+currently require the CI workflow before code reaches `main`, and the workflow
+does not yet run formatting, linting, or security-audit checks.
 
 Pre-commit hooks (`clippy`, `rustfmt`, `eslint`, `prettier`) exist locally but
-are not enforced in CI. A contributor who skips `pre-commit install` bypasses
-all of them.
+are not fully mirrored in CI. A contributor who skips `pre-commit install`
+bypasses some of them.
 
 **Recommendation:**
 
-Add a CI workflow triggered on `pull_request` and `push` to `main` that runs:
+Expand the CI workflow and make it a required status check for `main`. The
+target workflow should run:
 
 ```text
 cargo fmt -- --check
@@ -49,7 +55,7 @@ pnpm exec eslint .
 pnpm exec prettier --check .
 ```
 
-Make this workflow a required status check for `main`.
+Once this workflow is stable, make it a required status check for `main`.
 
 ### CE-02: Cargo.lock Not Committed
 
@@ -244,7 +250,7 @@ Review audit logs to build an egress allowlist, then switch to
 
 ## Recommended Implementation Order
 
-1. Commit `Cargo.lock` and add a required CI workflow.
+1. Commit `Cargo.lock` and expand/require the CI workflow.
 2. SHA-pin all GitHub Actions.
 3. Enable Dependabot alerts and security updates; add `dependabot.yml`.
 4. Set a restrictive CSP in `tauri.conf.json`.
