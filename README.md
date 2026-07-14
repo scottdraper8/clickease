@@ -2,7 +2,7 @@
 
 <kbd><img width="100%" src="assets/banner.png" alt="Clickease Banner"></kbd>
 
-[![Clickease Version](https://img.shields.io/badge/Clickease-0.0.2-ff79c6?logo=github&logoColor=white&labelColor=6272a4)](https://github.com/scottdraper8/clickease/releases)
+[![Clickease Version](https://img.shields.io/badge/Clickease-0.0.3-ff79c6?logo=github&logoColor=white&labelColor=6272a4)](https://github.com/scottdraper8/clickease/releases)
 [![CI](https://github.com/scottdraper8/clickease/actions/workflows/ci.yml/badge.svg)](https://github.com/scottdraper8/clickease/actions/workflows/ci.yml)
 [![Rust 1.80+](https://img.shields.io/badge/Rust-1.80+-ffb86c?logo=rust&logoColor=white&labelColor=6272a4)](https://www.rust-lang.org/)
 [![pnpm](https://img.shields.io/badge/pnpm-10.0+-f1fa8c?logo=pnpm&logoColor=282a36&labelColor=6272a4)](https://pnpm.io/)
