@@ -8,9 +8,9 @@
   <body>
     <div
       id="permission-banner"
-      class="hidden bg-amber-500/10 border-b border-amber-500/20 px-8 py-3 text-sm flex justify-between items-center"
+      class="hidden px-8 py-3 text-sm flex justify-between items-center"
     >
-      <span class="text-amber-600 dark:text-amber-400 font-medium">
+      <span class="status-warning font-medium">
         [Alert] Accessibility permissions are required to simulate inputs on
         macOS.
       </span>
@@ -34,7 +34,7 @@
         <div class="flex gap-4">
           <button
             id="stop-all-btn"
-            class="neu-button text-red-500 hidden"
+            class="neu-button status-danger hidden"
             title="Stop All Schedules"
           >
             Stop All
@@ -86,7 +86,9 @@
               Back
             </button>
 
-            <button class="neu-button key key-wide-3" data-key="Tab">Tab</button>
+            <button class="neu-button key key-wide-3" data-key="Tab">
+              Tab
+            </button>
             <button class="neu-button key" data-key="q">Q</button>
             <button class="neu-button key" data-key="w">W</button>
             <button class="neu-button key" data-key="e">E</button>
@@ -139,7 +141,9 @@
             <button class="neu-button key key-wide-3" data-key="Control">
               Ctrl
             </button>
-            <button class="neu-button key key-wide-3" data-key="Alt">Alt</button>
+            <button class="neu-button key key-wide-3" data-key="Alt">
+              Alt
+            </button>
             <button class="neu-button key key-wide-3" data-key="Meta">
               Meta
             </button>
@@ -149,7 +153,9 @@
             <button class="neu-button key key-wide-3" data-key="Meta">
               Meta
             </button>
-            <button class="neu-button key key-wide-3" data-key="Alt">Alt</button>
+            <button class="neu-button key key-wide-3" data-key="Alt">
+              Alt
+            </button>
             <button class="neu-button key key-wide-3" data-key="Control">
               Ctrl
             </button>
@@ -288,8 +294,13 @@
             </div>
           </section>
 
-          <section id="jobs-panel" class="neu-card flex flex-col overflow-visible">
-            <h2 class="text-lg font-bold uppercase tracking-wide opacity-80 mb-6">
+          <section
+            id="jobs-panel"
+            class="neu-card flex flex-col overflow-visible"
+          >
+            <h2
+              class="text-lg font-bold uppercase tracking-wide opacity-80 mb-6"
+            >
               Active Jobs
             </h2>
             <div

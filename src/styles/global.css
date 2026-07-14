@@ -1,17 +1,30 @@
 @import "tailwindcss";
 
 @theme {
-  --color-dracula-bg: oklch(18% 0.024 286.37);
-  --color-dracula-bg-elevated: oklch(24% 0.024 286.37);
-  --color-dracula-fg: oklch(93.65% 0.016 284.07);
-  --color-dracula-primary: oklch(70.17% 0.16 322.16);
-  --color-dracula-accent: oklch(80% 0.12 150);
+  /* Dracula Classic */
+  --color-dracula-bg: #282a36;
+  --color-dracula-bg-elevated: #44475a;
+  --color-dracula-fg: #f8f8f2;
+  --color-dracula-muted: #6272a4;
+  --color-dracula-primary: #ff79c6;
+  --color-dracula-accent: #50fa7b;
+  --color-dracula-highlight: #bd93f9;
+  --color-dracula-warning: #f1fa8c;
+  --color-dracula-danger: #ff5555;
+  --color-dracula-info: #8be9fd;
 
-  --color-catppuccin-bg: oklch(93% 0.01 254.76);
-  --color-catppuccin-bg-elevated: oklch(98% 0.01 254.76);
-  --color-catppuccin-fg: oklch(34.15% 0.033 255.88);
-  --color-catppuccin-primary: oklch(62.88% 0.14 300.9);
-  --color-catppuccin-accent: oklch(75% 0.12 150);
+  /* Catppuccin Latte */
+  --color-catppuccin-bg: #eff1f5;
+  --color-catppuccin-bg-elevated: #e6e9ef;
+  --color-catppuccin-surface: #ccd0da;
+  --color-catppuccin-fg: #4c4f69;
+  --color-catppuccin-muted: #5c5f77;
+  --color-catppuccin-primary: #8839ef;
+  --color-catppuccin-accent: #40a02b;
+  --color-catppuccin-highlight: #1e66f5;
+  --color-catppuccin-warning: #df8e1d;
+  --color-catppuccin-danger: #d20f39;
+  --color-catppuccin-info: #04a5e5;
 
   /* Soft Elevation Shadows */
   --shadow-neumorphic: 2px 4px 8px var(--shadow-dark);
@@ -28,10 +41,21 @@
   /* Catppuccin Latte (Light) */
   --bg: var(--color-catppuccin-bg);
   --bg-elevated: var(--color-catppuccin-bg-elevated);
+  --bg-muted: var(--color-catppuccin-surface);
   --fg: var(--color-catppuccin-fg);
+  --muted: var(--color-catppuccin-muted);
   --primary: var(--color-catppuccin-primary);
   --accent: var(--color-catppuccin-accent);
-  --shadow-dark: oklch(88% 0.01 254.76);
+  --highlight: var(--color-catppuccin-highlight);
+  --warning: var(--color-catppuccin-warning);
+  --danger: var(--color-catppuccin-danger);
+  --info: var(--color-catppuccin-info);
+  --border: color-mix(in srgb, var(--fg) 12%, transparent);
+  --shadow-dark: color-mix(
+    in srgb,
+    var(--color-catppuccin-crust, #dce0e8) 70%,
+    transparent
+  );
 
   color: var(--fg);
   background-color: var(--bg);
@@ -44,10 +68,17 @@
   /* Dracula (Dark) */
   --bg: var(--color-dracula-bg);
   --bg-elevated: var(--color-dracula-bg-elevated);
+  --bg-muted: var(--color-dracula-muted);
   --fg: var(--color-dracula-fg);
+  --muted: var(--color-dracula-muted);
   --primary: var(--color-dracula-primary);
   --accent: var(--color-dracula-accent);
-  --shadow-dark: oklch(14% 0.02 286.37);
+  --highlight: var(--color-dracula-highlight);
+  --warning: var(--color-dracula-warning);
+  --danger: var(--color-dracula-danger);
+  --info: var(--color-dracula-info);
+  --border: color-mix(in srgb, var(--fg) 12%, transparent);
+  --shadow-dark: color-mix(in srgb, #191a21 80%, transparent);
 }
 
 body {
@@ -66,9 +97,9 @@ body {
 .logo-gradient {
   background: linear-gradient(
     to right,
-    oklch(75% 0.2 340),
-    oklch(65% 0.25 300),
-    oklch(55% 0.2 280)
+    var(--primary),
+    var(--highlight),
+    var(--info)
   );
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
@@ -84,11 +115,11 @@ body {
 
 .neu-card {
   background: var(--bg-elevated);
-  border-radius: 16px;
+  border-radius: 8px;
   box-shadow: var(--shadow-neumorphic);
   padding: 1.5rem;
   margin: 1rem;
-  border: 1px solid oklch(100% 0 0 / 0.03);
+  border: 1px solid var(--border);
 }
 
 .neu-button {
@@ -96,7 +127,7 @@ body {
   border-radius: 8px;
   box-shadow: var(--shadow-neumorphic);
   padding: 0.5rem 1rem;
-  border: 1px solid oklch(100% 0 0 / 0.03);
+  border: 1px solid var(--border);
   cursor: pointer;
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   font-weight: 500;
@@ -139,6 +170,31 @@ body {
   color: var(--fg);
   width: 100%;
   -moz-appearance: textfield;
+}
+
+#permission-banner {
+  background: color-mix(in srgb, var(--warning) 12%, transparent);
+  border-bottom: 1px solid color-mix(in srgb, var(--warning) 28%, transparent);
+}
+
+.status-muted {
+  color: var(--muted);
+}
+
+.status-success {
+  color: var(--accent);
+}
+
+.status-warning {
+  color: var(--warning);
+}
+
+.status-danger {
+  color: var(--danger);
+}
+
+.status-info {
+  color: var(--info);
 }
 
 .neu-input::-webkit-outer-spin-button,

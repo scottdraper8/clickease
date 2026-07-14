@@ -300,8 +300,8 @@ listen("schedule-tick", (event) => {
     const pauseBtn = item.element.querySelector(".pause-btn");
     if (pauseBtn) {
       pauseBtn.textContent = item.isPaused ? "RESUME" : "PAUSE";
-      pauseBtn.classList.toggle("text-amber-500", !item.isPaused);
-      pauseBtn.classList.toggle("text-green-500", item.isPaused);
+      pauseBtn.classList.toggle("status-warning", !item.isPaused);
+      pauseBtn.classList.toggle("status-success", item.isPaused);
     }
   }
 });
@@ -334,10 +334,10 @@ function addScheduleToList(schedule: Schedule) {
         }s | REM: <span class="time-remaining">--:--</span></p>
       </div>
       <div class="flex gap-2">
-        <button class="neu-button pause-btn py-2 px-3 text-[10px] font-bold text-amber-500">
+        <button class="neu-button pause-btn py-2 px-3 text-[10px] font-bold status-warning">
           PAUSE
         </button>
-        <button class="neu-button stop-btn py-2 px-3 text-[10px] font-bold text-red-500">
+        <button class="neu-button stop-btn py-2 px-3 text-[10px] font-bold status-danger">
           STOP
         </button>
       </div>
@@ -356,8 +356,8 @@ function addScheduleToList(schedule: Schedule) {
       }
       const pauseBtn = item.element.querySelector(".pause-btn")!;
       pauseBtn.textContent = item.isPaused ? "RESUME" : "PAUSE";
-      pauseBtn.classList.toggle("text-amber-500", !item.isPaused);
-      pauseBtn.classList.toggle("text-green-500", item.isPaused);
+      pauseBtn.classList.toggle("status-warning", !item.isPaused);
+      pauseBtn.classList.toggle("status-success", item.isPaused);
     }
   });
 
@@ -368,7 +368,11 @@ function addScheduleToList(schedule: Schedule) {
     }
   });
 
-  activeSchedules.set(schedule.id, { schedule, element: card, isPaused: false });
+  activeSchedules.set(schedule.id, {
+    schedule,
+    element: card,
+    isPaused: false,
+  });
   scheduleList.appendChild(card);
   updateStopAllVisibility();
 }
