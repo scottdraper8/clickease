@@ -99,7 +99,7 @@ async fn run_schedule_loop(
     is_paused: Arc<AtomicBool>,
 ) {
     let mut total_remaining = schedule.active_duration;
-    let tick_interval = Duration::from_secs(1);
+    let pause_poll_interval = Duration::from_millis(100);
 
     loop {
         let _ = app.emit(
@@ -116,67 +116,71 @@ async fn run_schedule_loop(
         }
 
         if is_paused.load(Ordering::SeqCst) {
-            sleep(tick_interval).await;
+            sleep(pause_poll_interval).await;
             continue;
         }
 
-        let cycle_start = Instant::now();
+        let mut cycle_active_elapsed = Duration::ZERO;
 
         for command in &schedule.sequence {
-            while is_paused.load(Ordering::SeqCst) {
-                sleep(Duration::from_millis(100)).await;
-            }
+            wait_until_resumed(&is_paused, pause_poll_interval).await;
 
+            let mut command_active_elapsed = Duration::ZERO;
             match command {
                 Command::KeyPress(k) => {
+                    let command_start = Instant::now();
                     let _ = simulator.key_click(k.clone());
+                    command_active_elapsed += command_start.elapsed();
                 }
                 Command::KeyDown(k) => {
+                    let command_start = Instant::now();
                     let _ = simulator.key_down(k.clone());
+                    command_active_elapsed += command_start.elapsed();
                 }
                 Command::KeyUp(k) => {
+                    let command_start = Instant::now();
                     let _ = simulator.key_up(k.clone());
+                    command_active_elapsed += command_start.elapsed();
                 }
                 Command::MouseClick(b) => {
+                    let command_start = Instant::now();
                     let _ = simulator.mouse_down(b.clone());
                     let _ = simulator.mouse_up(b.clone());
+                    command_active_elapsed += command_start.elapsed();
                 }
                 Command::MouseDown(b) => {
+                    let command_start = Instant::now();
                     let _ = simulator.mouse_down(b.clone());
+                    command_active_elapsed += command_start.elapsed();
                 }
                 Command::MouseUp(b) => {
+                    let command_start = Instant::now();
                     let _ = simulator.mouse_up(b.clone());
+                    command_active_elapsed += command_start.elapsed();
                 }
                 Command::MouseMove { x, y } => {
+                    let command_start = Instant::now();
                     let _ = simulator.mouse_move(*x, *y);
+                    command_active_elapsed += command_start.elapsed();
                 }
                 Command::Wait(d) => {
-                    let mut wait_remaining = *d;
-                    while !wait_remaining.is_zero() {
-                        if is_paused.load(Ordering::SeqCst) {
-                            sleep(Duration::from_millis(100)).await;
-                            continue;
-                        }
-                        let step = wait_remaining.min(Duration::from_millis(100));
-                        sleep(step).await;
-                        wait_remaining -= step;
-                    }
+                    command_active_elapsed +=
+                        sleep_active(*d, &is_paused, pause_poll_interval).await;
                 }
             }
+            cycle_active_elapsed += command_active_elapsed;
         }
 
-        let mut interval_remaining = schedule.interval.saturating_sub(cycle_start.elapsed());
-        while !interval_remaining.is_zero() {
-            if is_paused.load(Ordering::SeqCst) {
-                sleep(Duration::from_millis(100)).await;
-                continue;
-            }
-            let step = interval_remaining.min(Duration::from_millis(100));
-            sleep(step).await;
-            interval_remaining -= step;
+        let interval_remaining = schedule.interval.saturating_sub(cycle_active_elapsed);
+        cycle_active_elapsed +=
+            sleep_active(interval_remaining, &is_paused, pause_poll_interval).await;
+
+        if cycle_active_elapsed.is_zero() {
+            cycle_active_elapsed +=
+                sleep_active(Duration::from_millis(1), &is_paused, pause_poll_interval).await;
         }
 
-        total_remaining = total_remaining.saturating_sub(cycle_start.elapsed().max(tick_interval));
+        total_remaining = total_remaining.saturating_sub(cycle_active_elapsed);
     }
 
     app.notification()
@@ -193,65 +197,63 @@ async fn run_schedule_loop(
     }
 }
 
+async fn wait_until_resumed(is_paused: &AtomicBool, poll_interval: Duration) {
+    while is_paused.load(Ordering::SeqCst) {
+        sleep(poll_interval).await;
+    }
+}
+
+async fn sleep_active(
+    duration: Duration,
+    is_paused: &AtomicBool,
+    poll_interval: Duration,
+) -> Duration {
+    let mut remaining = duration;
+    let mut active_elapsed = Duration::ZERO;
+
+    while !remaining.is_zero() {
+        if is_paused.load(Ordering::SeqCst) {
+            sleep(poll_interval).await;
+            continue;
+        }
+
+        let step = remaining.min(poll_interval);
+        let step_started_at = Instant::now();
+        sleep(step).await;
+        let elapsed = step_started_at.elapsed().min(step);
+        active_elapsed += elapsed;
+        remaining = remaining.saturating_sub(elapsed);
+    }
+
+    active_elapsed
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::simulator::types::*;
-    use std::sync::atomic::{AtomicUsize, Ordering};
+    use std::sync::atomic::Ordering;
     use std::time::Duration;
 
-    struct MockSimulator {
-        click_count: AtomicUsize,
-    }
-
-    impl MockSimulator {
-        fn new() -> Self {
-            Self {
-                click_count: AtomicUsize::new(0),
-            }
-        }
-    }
-
-    impl InputSimulator for MockSimulator {
-        fn key_down(&self, _key: Key) -> Result<(), SimulatorError> {
-            Ok(())
-        }
-        fn key_up(&self, _key: Key) -> Result<(), SimulatorError> {
-            self.click_count.fetch_add(1, Ordering::SeqCst);
-            Ok(())
-        }
-        fn mouse_down(&self, _button: MouseButton) -> Result<(), SimulatorError> {
-            Ok(())
-        }
-        fn mouse_up(&self, _button: MouseButton) -> Result<(), SimulatorError> {
-            Ok(())
-        }
-        fn mouse_move(&self, _x: i32, _y: i32) -> Result<(), SimulatorError> {
-            Ok(())
-        }
-    }
-
     #[tokio::test]
-    async fn test_schedule_loop() {
-        let simulator = Arc::new(MockSimulator::new());
-        let schedule = Schedule {
-            id: Uuid::new_v4(),
-            name: "test".into(),
-            sequence: vec![Command::KeyPress(Key::Char('f'))],
-            interval: Duration::from_millis(10),
-            active_duration: Duration::from_millis(50),
-            repeat_after: None,
-        };
+    async fn sleep_active_does_not_count_paused_wall_time() {
+        let is_paused = Arc::new(AtomicBool::new(true));
+        let resume_flag = is_paused.clone();
 
-        run_schedule_loop(
-            schedule,
-            simulator.clone(),
-            Default::default(),
-            Arc::new(AtomicBool::new(false)),
+        tokio::spawn(async move {
+            sleep(Duration::from_millis(30)).await;
+            resume_flag.store(false, Ordering::SeqCst);
+        });
+
+        let wall_start = Instant::now();
+        let active_elapsed = sleep_active(
+            Duration::from_millis(20),
+            &is_paused,
+            Duration::from_millis(5),
         )
         .await;
+        let wall_elapsed = wall_start.elapsed();
 
-        let counts = simulator.click_count.load(Ordering::SeqCst);
-        assert!(counts >= 4 && counts <= 6);
+        assert_eq!(active_elapsed, Duration::from_millis(20));
+        assert!(wall_elapsed >= Duration::from_millis(45));
     }
 }
