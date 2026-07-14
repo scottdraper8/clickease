@@ -3,9 +3,9 @@
 <kbd><img width="100%" src="assets/banner.png" alt="Clickease Banner"></kbd>
 
 [![Clickease Version](https://img.shields.io/badge/Clickease-0.0.2-ff79c6?logo=github&logoColor=white&labelColor=6272a4)](https://github.com/scottdraper8/clickease/releases)
+[![CI](https://github.com/scottdraper8/clickease/actions/workflows/ci.yml/badge.svg)](https://github.com/scottdraper8/clickease/actions/workflows/ci.yml)
 [![Rust 1.80+](https://img.shields.io/badge/Rust-1.80+-ffb86c?logo=rust&logoColor=white&labelColor=6272a4)](https://www.rust-lang.org/)
 [![pnpm](https://img.shields.io/badge/pnpm-10.0+-f1fa8c?logo=pnpm&logoColor=282a36&labelColor=6272a4)](https://pnpm.io/)
-[![pre-commit](https://img.shields.io/badge/pre--commit-Enabled-50fa7b?logo=pre-commit&logoColor=282a36&labelColor=6272a4)](https://github.com/pre-commit/pre-commit)
 [![License: AGPL-3.0](https://img.shields.io/badge/License-AGPL--3.0-8be9fd?logo=opensourceinitiative&logoColor=white&labelColor=6272a4)](LICENSE)
 
 <hr>
@@ -66,14 +66,6 @@ graph LR
 >
 > **Privileged Access Required**: To ensure reliable input injection across all windows (including elevated ones), Clickease requires **Administrator** privileges on Windows and **Accessibility** permissions on macOS.
 
-## Key Features
-
-- **Native Performance**: Leverages Rust for precise timing and direct OS API interaction.
-- **Neumorphic Design**: A tactile UI with Dracula (Dark) and Catppuccin (Light) themes.
-- **Interactive Keyboard**: Visual key mapping with support for multi-key combinations and Shift modes.
-- **Hardened Security**: Built with a security-first CI/CD pipeline and automated dependency auditing.
-- **Global Panic Button**: Instantly stop all active automation with `Ctrl+Shift+X`.
-
 ## Development
 
 This project is built using **Tauri v2**. To begin development, ensure you have the Rust toolchain and Node.js environment configured.
@@ -90,9 +82,3 @@ This project is built using **Tauri v2**. To begin development, ensure you have 
    ```bash
    pnpm tauri dev
    ```
-
----
-
-<div align="center">
-    <em>Built with care for the open source community</em> :purple_heart:
-</div>
